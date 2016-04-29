@@ -11,18 +11,16 @@ import java.util.List;
 /**
  * Created by YanXin on 2016/4/29.
  */
-public class DefaultListAdapter implements IListAdapter {
+public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter, ItemListAdapter.onMenuItemClickListener {
 
-    private Context mContext;
     private List<MenuItem> mMenuItems;
-    private String mDefaultMenuTitle;
-    private FilterDropMenu mFilterDropMenu;
+    private ItemListAdapter mItemListAdapter;
 
     public DefaultListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu) {
-        mContext = context;
+        super(context, defaultMenuTitle, filterDropMenu);
         mMenuItems = items;
-        mDefaultMenuTitle = defaultMenuTitle;
-        mFilterDropMenu = filterDropMenu;
+        mItemListAdapter = new ItemListAdapter(mContext, mMenuItems, mFilterDropMenu, this);
+        mItemListAdapter.setOnMenuItemClickListener(this);
     }
 
     @Override
@@ -32,9 +30,25 @@ public class DefaultListAdapter implements IListAdapter {
         return recyclerView;
     }
 
+    @Override
+    public MenuItem getSelectMenuItem() {
+        return mSelectMenuItem;
+    }
+
+    @Override
+    public void setSelect(MenuItem item) {
+        mSelectMenuItem = item;
+        mFilterDropMenu.setSelectTab(item);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        mItemListAdapter.notifyDataSetChanged();
+    }
+
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        recyclerView.setAdapter(new ItemListAdapter(mContext, mMenuItems, mFilterDropMenu));
+        recyclerView.setAdapter(mItemListAdapter);
     }
 
     @Override
@@ -43,8 +57,8 @@ public class DefaultListAdapter implements IListAdapter {
     }
 
     @Override
-    public String getDefaultMenuTitle() {
-        return mDefaultMenuTitle;
+    public void onMenuItemClick(MenuItem item) {
+        setSelect(item);
+        mFilterDropMenu.closeMenu();
     }
-
 }

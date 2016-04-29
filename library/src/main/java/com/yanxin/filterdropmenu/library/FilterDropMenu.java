@@ -170,7 +170,7 @@ public class FilterDropMenu extends LinearLayout {
         return tab;
     }
 
-    public void setTabText(MenuItem item) {
+    public void setSelectTab(MenuItem item) {
         if (mCurrentOpenPositon != -1) {
             ((TextView) ((ViewGroup) mTabMenuLayout.getChildAt(mCurrentOpenPositon))
                     .getChildAt(0)).setText(item.isDefault ? getAdapter().getDefaultMenuTitle() : item.name);
@@ -179,13 +179,6 @@ public class FilterDropMenu extends LinearLayout {
 
     private IAdapter getAdapter() {
         return mIAdapters[mCurrentOpenPositon / 2];
-    }
-
-    public String getTabText() {
-        if (mCurrentOpenPositon != -1) {
-            return ((TextView) ((ViewGroup) mTabMenuLayout.getChildAt(mCurrentOpenPositon)).getChildAt(0)).getText().toString();
-        }
-        return null;
     }
 
     public void setTabClickable(boolean clickable) {
@@ -219,19 +212,7 @@ public class FilterDropMenu extends LinearLayout {
                 if (mCurrentOpenPositon == i) {
                     closeMenu();
                 } else {
-                    if (mCurrentOpenPositon == -1) {
-                        mPopupMenuLayout.setVisibility(View.VISIBLE);
-                        mPopupMenuLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_menu_in));
-                        mContentLayout.setVisibility(VISIBLE);
-                        mContentLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_mask_in));
-                        mPopupMenuLayout.getChildAt(i / 2).setVisibility(View.VISIBLE);
-                    } else {
-                        mPopupMenuLayout.getChildAt(i / 2).setVisibility(View.VISIBLE);
-                    }
-                    mCurrentOpenPositon = i;
-                    clickTextView.setTextColor(mTextSelectedColor);
-                    clickTextView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                            ContextCompat.getDrawable(getContext(), mMenuSelectedIcon), null);
+                    showMenu(i, clickTextView);
                 }
             } else {
                 clickTextView.setTextColor(mTextUnselectedColor);
@@ -240,6 +221,23 @@ public class FilterDropMenu extends LinearLayout {
                 mPopupMenuLayout.getChildAt(i / 2).setVisibility(View.GONE);
             }
         }
+    }
+
+    private void showMenu(int childIndex, TextView clickTextView) {
+        if (mCurrentOpenPositon == -1) {
+            mPopupMenuLayout.setVisibility(View.VISIBLE);
+            mPopupMenuLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_menu_in));
+            mContentLayout.setVisibility(VISIBLE);
+            mContentLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_mask_in));
+            mPopupMenuLayout.getChildAt(childIndex / 2).setVisibility(View.VISIBLE);
+        } else {
+            mPopupMenuLayout.getChildAt(childIndex / 2).setVisibility(View.VISIBLE);
+        }
+        mCurrentOpenPositon = childIndex;
+        clickTextView.setTextColor(mTextSelectedColor);
+        clickTextView.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                ContextCompat.getDrawable(getContext(), mMenuSelectedIcon), null);
+        getAdapter().notifyDataSetChanged();
     }
 
     public int dpTpPx(float value) {

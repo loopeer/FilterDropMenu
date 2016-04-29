@@ -15,12 +15,21 @@ public class ItemListAdapter extends RecyclerView.Adapter {
     private List<MenuItem> mMenuItems;
     private FilterDropMenu mFilterDropMenu;
 
+    private IAdapter mIAdapter;
+
+    private onMenuItemClickListener mOnMenuItemClickListener;
+
+    public void setOnMenuItemClickListener(onMenuItemClickListener onMenuItemClickListener) {
+        mOnMenuItemClickListener = onMenuItemClickListener;
+    }
+
     private View mSelectView;
 
-    public ItemListAdapter(Context context, List<MenuItem> menuItems, FilterDropMenu menu) {
+    public ItemListAdapter(Context context, List<MenuItem> menuItems, FilterDropMenu menu, IAdapter iAdapter) {
         mContext = context;
         mMenuItems = menuItems;
         mFilterDropMenu = menu;
+        mIAdapter = iAdapter;
     }
 
     @Override
@@ -31,32 +40,20 @@ public class ItemListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
-        final FilterDropMenuItemViewHolder holder = (FilterDropMenuItemViewHolder) viewHolder;
+        FilterDropMenuItemViewHolder holder = (FilterDropMenuItemViewHolder) viewHolder;
 
-        if (mMenuItems.get(position).equals(mFilterDropMenu.getTabText())) {
+        if (mIAdapter.getSelectMenuItem() != null && mIAdapter.getSelectMenuItem().name.equals(mMenuItems.get(position).name)) {
             holder.itemView.setSelected(true);
         } else {
             holder.itemView.setSelected(false);
-        }
-
-        if (mSelectView != null && mSelectView.getTag() != null) {
-            if ((int) mSelectView.getTag() != position)
-                holder.itemView.setSelected(false);
-            else
-                holder.itemView.setSelected(true);
         }
 
         holder.mTxtName.setText(mMenuItems.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFilterDropMenu.setTabText(mMenuItems.get(position));
-                mFilterDropMenu.closeMenu();
-                if (mSelectView != null)
-                    mSelectView.setSelected(false);
-                holder.itemView.setSelected(true);
-                mSelectView = holder.itemView;
-                mSelectView.setTag(position);
+                if (mOnMenuItemClickListener != null)
+                    mOnMenuItemClickListener.onMenuItemClick(mMenuItems.get(position));
             }
         });
     }
@@ -64,6 +61,10 @@ public class ItemListAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return mMenuItems.size();
+    }
+
+    public interface onMenuItemClickListener {
+        void onMenuItemClick(MenuItem item);
     }
 
     class FilterDropMenuItemViewHolder extends RecyclerView.ViewHolder {
