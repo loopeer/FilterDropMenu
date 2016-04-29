@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="FilterDropMenu">
+        <attr name="underline_color" format="color"/>
+        <attr name="divider_color" format="color"/>
+        <attr name="text_selected_color" format="color"/>
+        <attr name="text_unselected_color" format="color"/>
+        <attr name="menu_background_color" format="color"/>
+        <attr name="mask_color" format="color"/>
+        <attr name="menu_text_size" format="dimension"/>
+        <attr name="menu_selected_icon" format="reference"/>
+        <attr name="menu_unselected_icon" format="reference"/>
+        <attr name="menu_height" format="dimension"/>
+    </declare-styleable>
+
+</resources>

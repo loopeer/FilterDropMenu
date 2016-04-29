@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.yanxin.filterdropmenu.library.FilterDropMenu
+        android:id="@+id/filter_drop_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:menu_height="40dp"
+        app:menu_selected_icon="@drawable/ic_drop_down_selected_icon"
+        app:menu_text_size="16sp"
+        app:menu_unselected_icon="@drawable/ic_drop_down_unselected_icon"
+        app:text_selected_color="@color/theme_accent"
+        app:text_unselected_color="@color/text_color_primary"/>
+
+</RelativeLayout>
