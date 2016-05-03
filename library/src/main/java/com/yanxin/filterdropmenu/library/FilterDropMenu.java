@@ -3,8 +3,6 @@ package com.yanxin.filterdropmenu.library;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -14,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class FilterDropMenu extends LinearLayout {
 
@@ -26,16 +23,14 @@ public class FilterDropMenu extends LinearLayout {
 
     private int mCurrentOpenPositon = -1;
 
-    private int mDividerColor = 0xffcccccc;
-    private int mTextSelectedColor = 0xff890c85;
-    private int mTextUnselectedColor = 0xff111111;
-    private int mMaskColor = 0x88888888;
+    private int mDividerColor = 0XFFCCCCCC;
+    private int mTextSelectedColor = 0XFF890C85;
+    private int mTextUnselectedColor = 0XFF111111;
+    private int mMaskColor = 0X88888888;
     private int mMenuBackgroundColor = Color.WHITE;
-    private int mUnderlineColor = 0xffcccccc;
-
+    private int mUnderlineColor = 0XFFCCCCCC;
     private int mMenuTextSize = 14;
     private int mDropMenuHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
-
     private int mMenuSelectedIcon;
     private int mMenuUnselectedIcon;
 
@@ -65,16 +60,14 @@ public class FilterDropMenu extends LinearLayout {
         mDropMenuHeight = a.getDimensionPixelSize(R.styleable.FilterDropMenu_menu_height, mDropMenuHeight);
         a.recycle();
 
+        setupLayout();
+    }
+
+    private void setupLayout() {
         addTabMenuLayout();
         addUnderLine();
         addContentLayout();
         addPopupMenuLayout();
-    }
-
-    private void addPopupMenuLayout() {
-        mPopupMenuLayout = new FrameLayout(getContext());
-        mPopupMenuLayout.setVisibility(GONE);
-        mContentLayout.addView(mPopupMenuLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void addTabMenuLayout() {
@@ -94,19 +87,26 @@ public class FilterDropMenu extends LinearLayout {
     private void addContentLayout() {
         mContentLayout = new FrameLayout(getContext());
         mContentLayout.setBackgroundColor(mMaskColor);
+        mContentLayout.setVisibility(GONE);
         mContentLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
             }
         });
-        mContentLayout.setVisibility(GONE);
         addView(mContentLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    private void addPopupMenuLayout() {
+        mPopupMenuLayout = new FrameLayout(getContext());
+        mPopupMenuLayout.setVisibility(GONE);
+        mContentLayout.addView(mPopupMenuLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     public void setAdapters(IAdapter... adapters) {
         mIAdapters = adapters;
         mTabMenuLayout.removeAllViews();
+        mPopupMenuLayout.removeAllViews();
         int position = 0;
         for (IAdapter adapter : adapters) {
             if (adapter instanceof IListAdapter)
@@ -116,12 +116,13 @@ public class FilterDropMenu extends LinearLayout {
     }
 
     private void processListAdapter(IListAdapter adapter, int position) {
-        addTab(adapter.getDefaultMenuTitle(), position);
-        mPopupMenuLayout.addView(adapter.getMenuContentView());
+        addTab(adapter, position);
+        if (adapter.isHasMenuContentView())
+            mPopupMenuLayout.addView(adapter.getMenuContentView());
     }
 
     public interface OnMenuClickListener {
-        void onClick(int position, String menu);
+        void onClick(int position);
     }
 
     private OnMenuClickListener mOnMenuClickListener;
@@ -130,70 +131,57 @@ public class FilterDropMenu extends LinearLayout {
         mOnMenuClickListener = onMenuClickListener;
     }
 
-    private void addTab(final String tabTitle, final int position) {
+    public int getMenuTextSize() {
+        return mMenuTextSize;
+    }
+
+    public int getTextSelectedColor() {
+        return mTextSelectedColor;
+    }
+
+    public int getTextUnselectedColor() {
+        return mTextUnselectedColor;
+    }
+
+    public int getMenuSelectedIcon() {
+        return mMenuSelectedIcon;
+    }
+
+    public int getMenuUnselectedIcon() {
+        return mMenuUnselectedIcon;
+    }
+
+    private void addTab(IListAdapter adapter, final int position) {
         if (position != 0) {
-            View view = new View(getContext());
-            LinearLayout.LayoutParams params = new LayoutParams(dpTpPx(0.5f), ViewGroup.LayoutParams.MATCH_PARENT);
-            params.setMargins(0, 12, 0, 12);
-            view.setLayoutParams(params);
-            view.setBackgroundColor(mDividerColor);
-            mTabMenuLayout.addView(view);
+            addVerticalDivider();
         }
 
-        final FrameLayout frameLayout = new FrameLayout(getContext());
+        FrameLayout frameLayout = new FrameLayout(getContext());
         frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F));
-        frameLayout.addView(getMenuItemTextView(tabTitle));
+        frameLayout.addView(adapter.getMenuTitleView());
         frameLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mOnMenuClickListener != null)
-                    mOnMenuClickListener.onClick(position, tabTitle);
-                switchMenu(frameLayout.getChildAt(0));
+                switchMenu(position);
             }
         });
 
         mTabMenuLayout.addView(frameLayout);
     }
 
-    private TextView getMenuItemTextView(String tabTitle) {
-        TextView tab = new TextView(getContext());
-        tab.setSingleLine();
-        tab.setEllipsize(TextUtils.TruncateAt.END);
-        tab.setGravity(Gravity.CENTER);
-        tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, mMenuTextSize);
-        tab.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-        tab.setTextColor(mTextUnselectedColor);
-        tab.setCompoundDrawablesWithIntrinsicBounds(0, 0, mMenuUnselectedIcon, 0);
-        tab.setCompoundDrawablePadding(12);
-        tab.setPadding(12, 12, 12, 12);
-        tab.setText(tabTitle);
-        return tab;
-    }
-
-    public void setSelectTab(MenuItem item) {
-        if (mCurrentOpenPositon != -1) {
-            ((TextView) ((ViewGroup) mTabMenuLayout.getChildAt(mCurrentOpenPositon))
-                    .getChildAt(0)).setText(item.isDefault ? getAdapter().getDefaultMenuTitle() : item.name);
-        }
-    }
-
-    private IAdapter getAdapter() {
-        return mIAdapters[mCurrentOpenPositon / 2];
-    }
-
-    public void setTabClickable(boolean clickable) {
-        for (int i = 0; i < mTabMenuLayout.getChildCount(); i = i + 2) {
-            mTabMenuLayout.getChildAt(i).setClickable(clickable);
-        }
+    private void addVerticalDivider() {
+        View view = new View(getContext());
+        LayoutParams params = new LayoutParams(dpTpPx(0.5f), ViewGroup.LayoutParams.MATCH_PARENT);
+        params.setMargins(0, 12, 0, 12);
+        view.setLayoutParams(params);
+        view.setBackgroundColor(mDividerColor);
+        mTabMenuLayout.addView(view);
     }
 
     public void closeMenu() {
-        if (mCurrentOpenPositon == -1)
+        if (mCurrentOpenPositon == -1 || !mIAdapters[mCurrentOpenPositon].isHasMenuContentView())
             return;
-        TextView openMenuItemTextView = ((TextView) ((ViewGroup) mTabMenuLayout.getChildAt(mCurrentOpenPositon)).getChildAt(0));
-        openMenuItemTextView.setTextColor(mTextUnselectedColor);
-        openMenuItemTextView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                ContextCompat.getDrawable(getContext(), mMenuUnselectedIcon), null);
+        mIAdapters[mCurrentOpenPositon].setUnSelect();
         mPopupMenuLayout.setVisibility(View.GONE);
         mPopupMenuLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_menu_out));
         mContentLayout.setVisibility(GONE);
@@ -201,43 +189,37 @@ public class FilterDropMenu extends LinearLayout {
         mCurrentOpenPositon = -1;
     }
 
-    public boolean isShowing() {
-        return mCurrentOpenPositon != -1;
-    }
+    private void switchMenu(int position) {
+        if (mOnMenuClickListener != null)
+            mOnMenuClickListener.onClick(position);
 
-    private void switchMenu(View target) {
-        for (int i = 0; i < mTabMenuLayout.getChildCount(); i = i + 2) {
-            TextView clickTextView = (TextView) ((ViewGroup) mTabMenuLayout.getChildAt(i)).getChildAt(0);
-            if (target == clickTextView) {
-                if (mCurrentOpenPositon == i) {
-                    closeMenu();
-                } else {
-                    showMenu(i, clickTextView);
-                }
-            } else {
-                clickTextView.setTextColor(mTextUnselectedColor);
-                clickTextView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                        ContextCompat.getDrawable(getContext(), mMenuUnselectedIcon), null);
-                mPopupMenuLayout.getChildAt(i / 2).setVisibility(View.GONE);
-            }
+        if (!mIAdapters[position].isHasMenuContentView()) {
+            if (mCurrentOpenPositon != -1 && mIAdapters[mCurrentOpenPositon].isHasMenuContentView())
+                closeMenu();
+            mCurrentOpenPositon = position;
+            return;
         }
+
+        if (mCurrentOpenPositon == position) {
+            closeMenu();
+            return;
+        }
+
+        showMenu(position);
     }
 
-    private void showMenu(int childIndex, TextView clickTextView) {
-        if (mCurrentOpenPositon == -1) {
-            mPopupMenuLayout.setVisibility(View.VISIBLE);
+    private void showMenu(int position) {
+        if (mCurrentOpenPositon == -1 || !mIAdapters[mCurrentOpenPositon].isHasMenuContentView()) {
+            mPopupMenuLayout.setVisibility(VISIBLE);
             mPopupMenuLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_menu_in));
             mContentLayout.setVisibility(VISIBLE);
             mContentLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_mask_in));
-            mPopupMenuLayout.getChildAt(childIndex / 2).setVisibility(View.VISIBLE);
         } else {
-            mPopupMenuLayout.getChildAt(childIndex / 2).setVisibility(View.VISIBLE);
+            mIAdapters[mCurrentOpenPositon].setUnSelect();
         }
-        mCurrentOpenPositon = childIndex;
-        clickTextView.setTextColor(mTextSelectedColor);
-        clickTextView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                ContextCompat.getDrawable(getContext(), mMenuSelectedIcon), null);
-        getAdapter().notifyDataSetChanged();
+        mIAdapters[position].setSelect();
+        showMenuContentView(mIAdapters[position].getMenuContentView());
+        mCurrentOpenPositon = position;
     }
 
     public int dpTpPx(float value) {
@@ -245,4 +227,17 @@ public class FilterDropMenu extends LinearLayout {
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, dm) + 0.5);
     }
 
+    private void showMenuContentView(View view) {
+        for (int i = 0; i < mPopupMenuLayout.getChildCount(); i++) {
+            if (view == mPopupMenuLayout.getChildAt(i)) {
+                view.setVisibility(VISIBLE);
+            } else {
+                mPopupMenuLayout.getChildAt(i).setVisibility(GONE);
+            }
+        }
+    }
+
+    public IAdapter[] getIAdapters() {
+        return mIAdapters;
+    }
 }

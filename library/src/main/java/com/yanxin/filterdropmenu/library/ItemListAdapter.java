@@ -13,7 +13,6 @@ public class ItemListAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private List<MenuItem> mMenuItems;
-    private FilterDropMenu mFilterDropMenu;
 
     private IAdapter mIAdapter;
 
@@ -23,12 +22,9 @@ public class ItemListAdapter extends RecyclerView.Adapter {
         mOnMenuItemClickListener = onMenuItemClickListener;
     }
 
-    private View mSelectView;
-
-    public ItemListAdapter(Context context, List<MenuItem> menuItems, FilterDropMenu menu, IAdapter iAdapter) {
+    public ItemListAdapter(Context context, List<MenuItem> menuItems, IAdapter iAdapter) {
         mContext = context;
         mMenuItems = menuItems;
-        mFilterDropMenu = menu;
         mIAdapter = iAdapter;
     }
 
@@ -42,7 +38,9 @@ public class ItemListAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         FilterDropMenuItemViewHolder holder = (FilterDropMenuItemViewHolder) viewHolder;
 
-        if (mIAdapter.getSelectMenuItem() != null && mIAdapter.getSelectMenuItem().name.equals(mMenuItems.get(position).name)) {
+        if (mIAdapter.getSelectMenuItem() != null
+                && mIAdapter.getSelectMenuItem().name.equals(mMenuItems.get(position).name)
+                && !mIAdapter.getSelectMenuItem().isDefault) {
             holder.itemView.setSelected(true);
         } else {
             holder.itemView.setSelected(false);
