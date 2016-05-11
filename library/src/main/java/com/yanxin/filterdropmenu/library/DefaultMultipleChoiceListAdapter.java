@@ -21,11 +21,17 @@ public class DefaultMultipleChoiceListAdapter extends BaseChoiceListAdapter impl
 
     @Override
     public void onMenuItemClick(MenuItem item, int position) {
-        if (mMenuItems.contains(item))
-            mMenuItems.remove(item);
-        else
+        if (item.isDefault) {
+            mMenuItems.clear();
             mMenuItems.add(item);
-        notifyDataSetChanged();
+            mFilterDropMenu.closeMenu();
+        } else {
+            if (mMenuItems.contains(item))
+                mMenuItems.remove(item);
+            else
+                mMenuItems.add(item);
+            notifyDataSetChanged();
+        }
     }
 
     @Override

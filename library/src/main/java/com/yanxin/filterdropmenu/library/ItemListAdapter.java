@@ -65,7 +65,7 @@ public class ItemListAdapter extends RecyclerView.Adapter {
             }
         } else {
             DefaultMultipleChoiceListAdapter adapter = (DefaultMultipleChoiceListAdapter) mIAdapter;
-            if (adapter.getSelectMenuItems().contains(mMenuItems.get(position)))
+            if (adapter.getSelectMenuItems().contains(mMenuItems.get(position)) && !mMenuItems.get(position).isDefault)
                 holder.itemView.setSelected(true);
             else
                 holder.itemView.setSelected(false);
