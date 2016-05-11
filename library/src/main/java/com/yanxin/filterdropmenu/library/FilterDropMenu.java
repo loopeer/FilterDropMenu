@@ -13,6 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import java.util.List;
+
 public class FilterDropMenu extends LinearLayout {
 
     private static final float DEFAULT_UNDER_LINE_HEIGHT = 0.5F;
@@ -115,6 +117,10 @@ public class FilterDropMenu extends LinearLayout {
         }
     }
 
+    public void update(int position, List<MenuItem> menuItems) {
+        ((ItemListAdapter) ((DefaultListAdapter) mIAdapters[position]).getListAdapter()).updateData(menuItems);
+    }
+
     private void processListAdapter(IListAdapter adapter, int position) {
         addTab(adapter, position);
         if (adapter.isHasMenuContentView())
@@ -129,6 +135,16 @@ public class FilterDropMenu extends LinearLayout {
 
     public void setOnMenuClickListener(OnMenuClickListener onMenuClickListener) {
         mOnMenuClickListener = onMenuClickListener;
+    }
+
+    private DefaultListAdapter.OnMenuSelectListener mOnMenuSelectListener;
+
+    public void setOnMenuSelectListener(DefaultListAdapter.OnMenuSelectListener onMenuSelectListener) {
+        mOnMenuSelectListener = onMenuSelectListener;
+    }
+
+    public DefaultListAdapter.OnMenuSelectListener getOnMenuSelectListener() {
+        return mOnMenuSelectListener;
     }
 
     public int getMenuTextSize() {
@@ -157,7 +173,7 @@ public class FilterDropMenu extends LinearLayout {
         }
 
         FrameLayout frameLayout = new FrameLayout(getContext());
-        frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F));
+        frameLayout.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F));
         frameLayout.addView(adapter.getMenuTitleView());
         frameLayout.setOnClickListener(new OnClickListener() {
             @Override

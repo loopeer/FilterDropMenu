@@ -4,9 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-/**
- * Created by YanXin on 2016/4/29.
- */
 public abstract class BaseMenuAdapter implements IAdapter {
 
     protected Context mContext;

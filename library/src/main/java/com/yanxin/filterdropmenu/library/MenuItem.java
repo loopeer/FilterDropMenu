@@ -2,9 +2,6 @@ package com.yanxin.filterdropmenu.library;
 
 import java.io.Serializable;
 
-/**
- * Created by YanXin on 2016/4/29.
- */
 public class MenuItem implements Serializable {
 
     public String name;

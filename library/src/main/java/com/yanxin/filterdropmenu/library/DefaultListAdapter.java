@@ -15,16 +15,14 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by YanXin on 2016/4/29.
- */
 public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter, ItemListAdapter.onMenuItemClickListener {
 
     private List<MenuItem> mMenuItems;
     private ItemListAdapter mItemListAdapter;
 
-    public DefaultListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu) {
+    public DefaultListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu, MenuItem defaultMenuItem) {
         super(context, defaultMenuTitle, filterDropMenu);
+        mSelectMenuItem = defaultMenuItem;
         mMenuItems = items;
         mMenuTitleView = createMenuTitleView();
         if (isHasMenuContentView()) {
@@ -54,6 +52,13 @@ public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter,
         mSelectMenuItem = item;
         mMenuTitleView.setText(item.isDefault ? getDefaultMenuTitle() : item.name);
         mFilterDropMenu.closeMenu();
+
+        if (mFilterDropMenu.getOnMenuSelectListener() != null)
+            mFilterDropMenu.getOnMenuSelectListener().onMenuSelect(item);
+    }
+
+    public interface OnMenuSelectListener {
+        void onMenuSelect(MenuItem item);
     }
 
     @Override
@@ -118,6 +123,11 @@ public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter,
     @Override
     public List<MenuItem> getMenuItems() {
         return mMenuItems;
+    }
+
+    @Override
+    public RecyclerView.Adapter getListAdapter() {
+        return mItemListAdapter;
     }
 
     @Override

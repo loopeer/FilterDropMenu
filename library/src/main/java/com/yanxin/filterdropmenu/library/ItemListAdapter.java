@@ -28,6 +28,12 @@ public class ItemListAdapter extends RecyclerView.Adapter {
         mIAdapter = iAdapter;
     }
 
+    public void updateData(List<MenuItem> menuItems) {
+        mMenuItems.clear();
+        mMenuItems.addAll(menuItems);
+        notifyDataSetChanged();
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_drop_menu, parent, false);
