@@ -13,20 +13,21 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.yanxin.filterdropmenu.library.interfaces.IListAdapter;
+
 import java.util.List;
 
-public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter, ItemListAdapter.onMenuItemClickListener {
+public abstract class BaseChoiceListAdapter extends BaseMenuAdapter implements IListAdapter, ItemListAdapter.onMenuItemClickListener {
 
     private List<MenuItem> mMenuItems;
     private ItemListAdapter mItemListAdapter;
 
-    public DefaultListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu, MenuItem defaultMenuItem) {
+    public BaseChoiceListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu, ItemListAdapter.ChoiceType choiceType) {
         super(context, defaultMenuTitle, filterDropMenu);
-        mSelectMenuItem = defaultMenuItem;
         mMenuItems = items;
         mMenuTitleView = createMenuTitleView();
         if (isHasMenuContentView()) {
-            mItemListAdapter = new ItemListAdapter(mContext, mMenuItems, this);
+            mItemListAdapter = new ItemListAdapter(mContext, mMenuItems, this, choiceType);
             mItemListAdapter.setOnMenuItemClickListener(this);
             mMenuContentView = createMenuContentView();
         }
@@ -40,21 +41,6 @@ public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter,
     @Override
     public View getMenuTitleView() {
         return mMenuTitleView;
-    }
-
-    @Override
-    public MenuItem getSelectMenuItem() {
-        return mSelectMenuItem;
-    }
-
-    @Override
-    public void setSelect(MenuItem item) {
-        mSelectMenuItem = item;
-        mMenuTitleView.setText(item.isDefault ? getDefaultMenuTitle() : item.name);
-        mFilterDropMenu.closeMenu();
-
-        if (mFilterDropMenu.getOnMenuSelectListener() != null)
-            mFilterDropMenu.getOnMenuSelectListener().onMenuSelect(item);
     }
 
     public interface OnMenuSelectListener {
@@ -128,12 +114,6 @@ public class DefaultListAdapter extends BaseMenuAdapter implements IListAdapter,
     @Override
     public RecyclerView.Adapter getListAdapter() {
         return mItemListAdapter;
-    }
-
-    @Override
-    public void onMenuItemClick(MenuItem item) {
-        setSelect(item);
-        mFilterDropMenu.closeMenu();
     }
 
 }

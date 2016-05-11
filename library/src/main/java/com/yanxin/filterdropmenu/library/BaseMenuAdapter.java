@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import com.yanxin.filterdropmenu.library.interfaces.IAdapter;
+
 public abstract class BaseMenuAdapter implements IAdapter {
 
     protected Context mContext;
@@ -12,8 +14,6 @@ public abstract class BaseMenuAdapter implements IAdapter {
 
     protected View mMenuContentView;
     protected TextView mMenuTitleView;
-
-    protected MenuItem mSelectMenuItem;
 
     public BaseMenuAdapter(Context context, String defaultMenuTitle, FilterDropMenu filterDropMenu) {
         mContext = context;

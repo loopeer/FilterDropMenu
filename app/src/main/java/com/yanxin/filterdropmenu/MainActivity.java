@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.yanxin.filterdropmenu.library.DefaultListAdapter;
+import com.yanxin.filterdropmenu.library.DefaultMultipleChoiceListAdapter;
+import com.yanxin.filterdropmenu.library.DefaultSingleChoiceListAdapter;
 import com.yanxin.filterdropmenu.library.FilterDropMenu;
 import com.yanxin.filterdropmenu.library.MenuItem;
 
@@ -33,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
         menuItems2.add(new MenuItem("测试2", ""));
         menuItems2.add(new MenuItem("测试22", ""));
 
-        mFilterDropMenu.setAdapters(new DefaultListAdapter(this, menuItems1, "测试1", mFilterDropMenu, menuItems1.get(0))
-                , new DefaultListAdapter(this, menuItems2, "测试2", mFilterDropMenu, menuItems2.get(0))
-                , new DefaultListAdapter(this, null, "测试3", mFilterDropMenu, new MenuItem("", "")));
+        mFilterDropMenu.setAdapters(new DefaultSingleChoiceListAdapter(this, menuItems1, "测试1", mFilterDropMenu, menuItems1.get(0))
+                , new DefaultMultipleChoiceListAdapter(this, menuItems2, "测试2", mFilterDropMenu, menuItems2.get(0))
+                , new DefaultSingleChoiceListAdapter(this, null, "测试3", mFilterDropMenu, new MenuItem("", "")));
 
         mFilterDropMenu.setOnMenuClickListener(new FilterDropMenu.OnMenuClickListener() {
             @Override
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             MenuItem item = (MenuItem) data.getSerializableExtra(EXTRA_SELECT_TAG);
-            mFilterDropMenu.getIAdapters()[2].setSelect(item);
+            ((DefaultSingleChoiceListAdapter) mFilterDropMenu.getIAdapters()[2]).setSelect(item);
         }
     }
 }

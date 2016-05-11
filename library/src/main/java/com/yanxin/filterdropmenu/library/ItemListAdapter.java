@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.yanxin.filterdropmenu.library.interfaces.IAdapter;
+
 import java.util.List;
 
 public class ItemListAdapter extends RecyclerView.Adapter {
@@ -16,16 +18,24 @@ public class ItemListAdapter extends RecyclerView.Adapter {
 
     private IAdapter mIAdapter;
 
+    private ChoiceType mChoiceType;
+
     private onMenuItemClickListener mOnMenuItemClickListener;
+
+    public enum ChoiceType {
+        SINGLE_CHOICE,
+        MULTIPLE_CHOICE
+    }
 
     public void setOnMenuItemClickListener(onMenuItemClickListener onMenuItemClickListener) {
         mOnMenuItemClickListener = onMenuItemClickListener;
     }
 
-    public ItemListAdapter(Context context, List<MenuItem> menuItems, IAdapter iAdapter) {
+    public ItemListAdapter(Context context, List<MenuItem> menuItems, IAdapter iAdapter, ChoiceType choiceType) {
         mContext = context;
         mMenuItems = menuItems;
         mIAdapter = iAdapter;
+        mChoiceType = choiceType;
     }
 
     public void updateData(List<MenuItem> menuItems) {
@@ -44,20 +54,30 @@ public class ItemListAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         FilterDropMenuItemViewHolder holder = (FilterDropMenuItemViewHolder) viewHolder;
 
-        if (mIAdapter.getSelectMenuItem() != null
-                && mIAdapter.getSelectMenuItem().name.equals(mMenuItems.get(position).name)
-                && !mIAdapter.getSelectMenuItem().isDefault) {
-            holder.itemView.setSelected(true);
+        if (mChoiceType == ChoiceType.SINGLE_CHOICE) {
+            DefaultSingleChoiceListAdapter adapter = (DefaultSingleChoiceListAdapter) mIAdapter;
+            if (adapter.getSelectMenuItem() != null
+                    && adapter.getSelectMenuItem().name.equals(mMenuItems.get(position).name)
+                    && !adapter.getSelectMenuItem().isDefault) {
+                holder.itemView.setSelected(true);
+            } else {
+                holder.itemView.setSelected(false);
+            }
         } else {
-            holder.itemView.setSelected(false);
+            DefaultMultipleChoiceListAdapter adapter = (DefaultMultipleChoiceListAdapter) mIAdapter;
+            if (adapter.getSelectMenuItems().contains(mMenuItems.get(position)))
+                holder.itemView.setSelected(true);
+            else
+                holder.itemView.setSelected(false);
         }
+
 
         holder.mTxtName.setText(mMenuItems.get(position).name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mOnMenuItemClickListener != null)
-                    mOnMenuItemClickListener.onMenuItemClick(mMenuItems.get(position));
+                    mOnMenuItemClickListener.onMenuItemClick(mMenuItems.get(position), position);
             }
         });
     }
@@ -68,7 +88,7 @@ public class ItemListAdapter extends RecyclerView.Adapter {
     }
 
     public interface onMenuItemClickListener {
-        void onMenuItemClick(MenuItem item);
+        void onMenuItemClick(MenuItem item, int position);
     }
 
     class FilterDropMenuItemViewHolder extends RecyclerView.ViewHolder {

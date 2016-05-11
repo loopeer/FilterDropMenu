@@ -13,6 +13,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.yanxin.filterdropmenu.library.interfaces.IAdapter;
+import com.yanxin.filterdropmenu.library.interfaces.IListAdapter;
+
 import java.util.List;
 
 public class FilterDropMenu extends LinearLayout {
@@ -118,7 +121,7 @@ public class FilterDropMenu extends LinearLayout {
     }
 
     public void update(int position, List<MenuItem> menuItems) {
-        ((ItemListAdapter) ((DefaultListAdapter) mIAdapters[position]).getListAdapter()).updateData(menuItems);
+        ((ItemListAdapter) ((DefaultSingleChoiceListAdapter) mIAdapters[position]).getListAdapter()).updateData(menuItems);
     }
 
     private void processListAdapter(IListAdapter adapter, int position) {
@@ -137,13 +140,13 @@ public class FilterDropMenu extends LinearLayout {
         mOnMenuClickListener = onMenuClickListener;
     }
 
-    private DefaultListAdapter.OnMenuSelectListener mOnMenuSelectListener;
+    private DefaultSingleChoiceListAdapter.OnMenuSelectListener mOnMenuSelectListener;
 
-    public void setOnMenuSelectListener(DefaultListAdapter.OnMenuSelectListener onMenuSelectListener) {
+    public void setOnMenuSelectListener(DefaultSingleChoiceListAdapter.OnMenuSelectListener onMenuSelectListener) {
         mOnMenuSelectListener = onMenuSelectListener;
     }
 
-    public DefaultListAdapter.OnMenuSelectListener getOnMenuSelectListener() {
+    public DefaultSingleChoiceListAdapter.OnMenuSelectListener getOnMenuSelectListener() {
         return mOnMenuSelectListener;
     }
 

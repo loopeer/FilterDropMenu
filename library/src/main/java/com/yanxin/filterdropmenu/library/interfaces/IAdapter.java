@@ -1,4 +1,4 @@
-package com.yanxin.filterdropmenu.library;
+package com.yanxin.filterdropmenu.library.interfaces;
 
 import android.view.View;
 import android.widget.TextView;
@@ -10,10 +10,6 @@ public interface IAdapter {
     View getMenuContentView();
 
     View getMenuTitleView();
-
-    MenuItem getSelectMenuItem();
-
-    void setSelect(MenuItem item);
 
     void notifyDataSetChanged();
 
