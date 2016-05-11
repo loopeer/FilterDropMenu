@@ -33,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
         menuItems2.add(new MenuItem("测试2", ""));
         menuItems2.add(new MenuItem("测试22", ""));
 
-        mFilterDropMenu.setAdapters(new DefaultListAdapter(this, menuItems1, "测试1", mFilterDropMenu)
-                , new DefaultListAdapter(this, menuItems2, "测试2", mFilterDropMenu)
-                , new DefaultListAdapter(this, null, "测试3", mFilterDropMenu));
+        mFilterDropMenu.setAdapters(new DefaultListAdapter(this, menuItems1, "测试1", mFilterDropMenu, menuItems1.get(0))
+                , new DefaultListAdapter(this, menuItems2, "测试2", mFilterDropMenu, menuItems2.get(0))
+                , new DefaultListAdapter(this, null, "测试3", mFilterDropMenu, new MenuItem("", "")));
 
         mFilterDropMenu.setOnMenuClickListener(new FilterDropMenu.OnMenuClickListener() {
             @Override
