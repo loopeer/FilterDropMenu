@@ -19,18 +19,14 @@ import java.util.List;
 
 public abstract class BaseChoiceListAdapter extends BaseMenuAdapter implements IListAdapter, ItemListAdapter.onMenuItemClickListener {
 
-    private List<MenuItem> mMenuItems;
-    private ItemListAdapter mItemListAdapter;
+    protected ItemListAdapter mItemListAdapter;
 
     public BaseChoiceListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu, ItemListAdapter.ChoiceType choiceType) {
         super(context, defaultMenuTitle, filterDropMenu);
-        mMenuItems = items;
         mMenuTitleView = createMenuTitleView();
-        if (isHasMenuContentView()) {
-            mItemListAdapter = new ItemListAdapter(mContext, mMenuItems, this, choiceType);
-            mItemListAdapter.setOnMenuItemClickListener(this);
-            mMenuContentView = createMenuContentView();
-        }
+        mItemListAdapter = new ItemListAdapter(mContext, items, this, choiceType);
+        mItemListAdapter.setOnMenuItemClickListener(this);
+        mMenuContentView = createMenuContentView();
     }
 
     @Override
@@ -44,25 +40,25 @@ public abstract class BaseChoiceListAdapter extends BaseMenuAdapter implements I
     }
 
     public interface OnMenuSelectListener {
-        void onMenuSelect(MenuItem item);
+        void onMenuSelect(int position, MenuItem item);
+    }
+
+    public interface OnMenuMultiSelectListener {
+        void onMenuSelect(int position, List<MenuItem> items);
     }
 
     @Override
     public void notifyDataSetChanged() {
-        if (!isHasMenuContentView())
-            return;
         mItemListAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public boolean isHasMenuContentView() {
-        return mMenuItems != null && mMenuItems.size() != 0;
+    public boolean isEmpty() {
+        return mItemListAdapter.getItemCount() <= 0;
     }
 
     @Override
     public View createMenuContentView() {
-        if (!isHasMenuContentView())
-            return null;
         RecyclerView recyclerView = (RecyclerView) LayoutInflater.from(mContext).inflate(R.layout.view_recycler_view, null);
         setupRecyclerView(recyclerView);
         return recyclerView;
@@ -78,7 +74,7 @@ public abstract class BaseChoiceListAdapter extends BaseMenuAdapter implements I
         tab.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         tab.setTextColor(mFilterDropMenu.getTextUnselectedColor());
         tab.setCompoundDrawablesWithIntrinsicBounds(0, 0, mFilterDropMenu.getMenuUnselectedIcon(), 0);
-        tab.setCompoundDrawablePadding(12);
+        tab.setCompoundDrawablePadding(mFilterDropMenu.dpTpPx(8));
         tab.setPadding(12, 12, 12, 12);
         tab.setText(getDefaultMenuTitle());
         return tab;
@@ -100,15 +96,13 @@ public abstract class BaseChoiceListAdapter extends BaseMenuAdapter implements I
     }
 
     private void setupRecyclerView(RecyclerView recyclerView) {
-        if (!isHasMenuContentView())
-            return;
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setAdapter(mItemListAdapter);
     }
 
     @Override
     public List<MenuItem> getMenuItems() {
-        return mMenuItems;
+        return mItemListAdapter.getDatas();
     }
 
     @Override

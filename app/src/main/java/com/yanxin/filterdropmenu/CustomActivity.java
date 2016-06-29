@@ -21,7 +21,7 @@ public class CustomActivity extends AppCompatActivity {
 
     public void returnMain(View view) {
         Intent intent = new Intent();
-        intent.putExtra(MainActivity.EXTRA_SELECT_TAG, new MenuItem("测试333", ""));
+        intent.putExtra(MainActivity.EXTRA_SELECT_TAG, new MenuItem("阿里巴巴", ""));
         setResult(RESULT_OK, intent);
         finish();
     }

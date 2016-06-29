@@ -6,6 +6,8 @@ public interface ISingleChoice {
 
     MenuItem getSelectMenuItem();
 
+    MenuItem getDefaultMenu();
+
     void setSelect(MenuItem item);
 
 }

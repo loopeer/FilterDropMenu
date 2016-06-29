@@ -121,13 +121,12 @@ public class FilterDropMenu extends LinearLayout {
     }
 
     public void update(int position, List<MenuItem> menuItems) {
-        ((ItemListAdapter) ((DefaultSingleChoiceListAdapter) mIAdapters[position]).getListAdapter()).updateData(menuItems);
+        ((ItemListAdapter) ((BaseChoiceListAdapter) mIAdapters[position]).getListAdapter()).updateData(menuItems);
     }
 
     private void processListAdapter(IListAdapter adapter, int position) {
         addTab(adapter, position);
-        if (adapter.isHasMenuContentView())
-            mPopupMenuLayout.addView(adapter.getMenuContentView());
+        mPopupMenuLayout.addView(adapter.getMenuContentView());
     }
 
     public interface OnMenuClickListener {
@@ -148,6 +147,16 @@ public class FilterDropMenu extends LinearLayout {
 
     public DefaultSingleChoiceListAdapter.OnMenuSelectListener getOnMenuSelectListener() {
         return mOnMenuSelectListener;
+    }
+
+    private BaseChoiceListAdapter.OnMenuMultiSelectListener mOnMenuMultiSelectListener;
+
+    public void setOnMenuMultiSelectListener(BaseChoiceListAdapter.OnMenuMultiSelectListener onMenuSelectListener) {
+        mOnMenuMultiSelectListener = onMenuSelectListener;
+    }
+
+    public BaseChoiceListAdapter.OnMenuMultiSelectListener getOnMenuMultiSelectListener() {
+        return mOnMenuMultiSelectListener;
     }
 
     public int getMenuTextSize() {
@@ -198,7 +207,7 @@ public class FilterDropMenu extends LinearLayout {
     }
 
     public void closeMenu() {
-        if (mCurrentOpenPositon == -1 || !mIAdapters[mCurrentOpenPositon].isHasMenuContentView())
+        if (mCurrentOpenPositon == -1 || mIAdapters[mCurrentOpenPositon].isEmpty())
             return;
         mIAdapters[mCurrentOpenPositon].setUnSelect();
         mPopupMenuLayout.setVisibility(View.GONE);
@@ -212,8 +221,8 @@ public class FilterDropMenu extends LinearLayout {
         if (mOnMenuClickListener != null)
             mOnMenuClickListener.onClick(position);
 
-        if (!mIAdapters[position].isHasMenuContentView()) {
-            if (mCurrentOpenPositon != -1 && mIAdapters[mCurrentOpenPositon].isHasMenuContentView())
+        if (mIAdapters[position].isEmpty()) {
+            if (mCurrentOpenPositon != -1 && !mIAdapters[mCurrentOpenPositon].isEmpty())
                 closeMenu();
             mCurrentOpenPositon = position;
             return;
@@ -228,7 +237,8 @@ public class FilterDropMenu extends LinearLayout {
     }
 
     private void showMenu(int position) {
-        if (mCurrentOpenPositon == -1 || !mIAdapters[mCurrentOpenPositon].isHasMenuContentView()) {
+        if (mIAdapters[position].isEmpty()) return;
+        if (mCurrentOpenPositon == -1 || mIAdapters[mCurrentOpenPositon].isEmpty()) {
             mPopupMenuLayout.setVisibility(VISIBLE);
             mPopupMenuLayout.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_menu_in));
             mContentLayout.setVisibility(VISIBLE);

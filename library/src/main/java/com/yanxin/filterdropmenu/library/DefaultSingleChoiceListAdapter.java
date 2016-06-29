@@ -11,9 +11,18 @@ public class DefaultSingleChoiceListAdapter extends BaseChoiceListAdapter implem
 
     protected MenuItem mSelectMenuItem;
 
+    private MenuItem mDefaultMenu;
+
     public DefaultSingleChoiceListAdapter(Context context, List<MenuItem> items, String defaultMenuTitle, FilterDropMenu filterDropMenu, MenuItem defaultMenuItem) {
         super(context, items, defaultMenuTitle, filterDropMenu, ItemListAdapter.ChoiceType.SINGLE_CHOICE);
         mSelectMenuItem = defaultMenuItem;
+        mDefaultMenu = defaultMenuItem;
+        updateMenuTitle();
+    }
+
+    private void updateMenuTitle() {
+        mMenuTitleView.setText(mSelectMenuItem == null ||
+                mSelectMenuItem.isDefault ? getDefaultMenuTitle() : mSelectMenuItem.name);
     }
 
     @Override
@@ -24,11 +33,11 @@ public class DefaultSingleChoiceListAdapter extends BaseChoiceListAdapter implem
     @Override
     public void setSelect(MenuItem item) {
         mSelectMenuItem = item;
-        mMenuTitleView.setText(item.isDefault ? getDefaultMenuTitle() : item.name);
+        updateMenuTitle();
         mFilterDropMenu.closeMenu();
 
         if (mFilterDropMenu.getOnMenuSelectListener() != null)
-            mFilterDropMenu.getOnMenuSelectListener().onMenuSelect(item);
+            mFilterDropMenu.getOnMenuSelectListener().onMenuSelect(getAdapterPosition(), item);
     }
 
     @Override
@@ -37,4 +46,8 @@ public class DefaultSingleChoiceListAdapter extends BaseChoiceListAdapter implem
         mFilterDropMenu.closeMenu();
     }
 
+    @Override
+    public MenuItem getDefaultMenu() {
+        return mDefaultMenu;
+    }
 }

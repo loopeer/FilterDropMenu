@@ -26,4 +26,13 @@ public abstract class BaseMenuAdapter implements IAdapter {
         return mDefaultMenuTitle;
     }
 
+    protected int getAdapterPosition() {
+        IAdapter[] adapters = mFilterDropMenu.getIAdapters();
+        if (adapters.length == 0) return -1;
+        for (int i = 0; i < adapters.length; i++) {
+            if (this == adapters[i]) return i;
+        }
+        return -1;
+    }
+
 }

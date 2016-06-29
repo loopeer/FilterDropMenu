@@ -8,6 +8,6 @@ public interface IMultipleChoice {
 
     List<MenuItem> getSelectMenuItems();
 
-    void setSelect(MenuItem... items);
+    void setSelect(List<MenuItem> items);
 
 }

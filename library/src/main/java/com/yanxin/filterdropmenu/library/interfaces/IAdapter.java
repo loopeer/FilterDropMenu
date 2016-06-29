@@ -13,7 +13,7 @@ public interface IAdapter {
 
     void notifyDataSetChanged();
 
-    boolean isHasMenuContentView();
+    boolean isEmpty();
 
     View createMenuContentView();
 

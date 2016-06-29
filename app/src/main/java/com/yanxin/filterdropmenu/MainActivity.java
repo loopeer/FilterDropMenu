@@ -14,10 +14,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int REQUEST_CODE = 0X0001;
+    public static final int REQUEST_CODE = 1;
     public static final String EXTRA_SELECT_TAG = "extra_select_tag";
 
-    FilterDropMenu mFilterDropMenu;
+    private FilterDropMenu mFilterDropMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,17 +26,17 @@ public class MainActivity extends AppCompatActivity {
         mFilterDropMenu = (FilterDropMenu) findViewById(R.id.filter_drop_menu);
         List<MenuItem> menuItems1 = new ArrayList<>();
         menuItems1.add(new MenuItem("全部", "", true));
-        menuItems1.add(new MenuItem("测试1", ""));
-        menuItems1.add(new MenuItem("测试11", ""));
+        menuItems1.add(new MenuItem("中国", ""));
+        menuItems1.add(new MenuItem("美国", ""));
 
         List<MenuItem> menuItems2 = new ArrayList<>();
         menuItems2.add(new MenuItem("全部", "", true));
-        menuItems2.add(new MenuItem("测试2", ""));
-        menuItems2.add(new MenuItem("测试22", ""));
+        menuItems2.add(new MenuItem("北京", ""));
+        menuItems2.add(new MenuItem("上海", ""));
 
-        mFilterDropMenu.setAdapters(new DefaultSingleChoiceListAdapter(this, menuItems1, "测试1", mFilterDropMenu, menuItems1.get(0))
-                , new DefaultMultipleChoiceListAdapter(this, menuItems2, "测试2", mFilterDropMenu, menuItems2.get(0))
-                , new DefaultSingleChoiceListAdapter(this, null, "测试3", mFilterDropMenu, new MenuItem("", "")));
+        mFilterDropMenu.setAdapters(new DefaultSingleChoiceListAdapter(this, menuItems1, "国家", mFilterDropMenu, menuItems1.get(0))
+                , new DefaultMultipleChoiceListAdapter(this, menuItems2, "城市", mFilterDropMenu, menuItems2.get(0))
+                , new DefaultSingleChoiceListAdapter(this, null, "公司", mFilterDropMenu, new MenuItem("绿葡科技", "")));
 
         mFilterDropMenu.setOnMenuClickListener(new FilterDropMenu.OnMenuClickListener() {
             @Override
